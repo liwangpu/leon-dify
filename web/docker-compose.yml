@@ -1,0 +1,11 @@
+# 这个docker-compose文件是拿来打包镜像的，不是部署的
+version: '3.5'
+
+services:
+  
+  dify-web:
+    container_name: dify-web-c
+    image: registry.cn-shanghai.aliyuncs.com/leon-pu/chuangyun-dify-web:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile

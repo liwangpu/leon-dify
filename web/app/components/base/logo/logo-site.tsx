@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import classNames from '@/utils/classnames'
+import classNames from 'classnames'
 import { useSelector } from '@/context/app-context'
 
 type LogoSiteProps = {
@@ -16,7 +16,10 @@ const LogoSite: FC<LogoSiteProps> = ({
     }
   })
 
-  const src = theme === 'light' ? '/logo/logo-site.png' : `/logo/logo-site-${theme}.png`
+  // return (
+  //   <></>
+  // );
+  const src = theme === 'light' ? '/logo/chuangyun-logo.png' : `/logo//logo/chuangyun-logo-${theme}.png`
   return (
     <img
       src={src}
