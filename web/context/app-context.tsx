@@ -6,16 +6,19 @@ import { createContext, useContext, useContextSelector } from 'use-context-selec
 import type { FC, ReactNode } from 'react'
 import { fetchAppList } from '@/service/apps'
 import Loading from '@/app/components/base/loading'
-import { fetchCurrentWorkspace, fetchLanggeniusVersion, fetchUserProfile } from '@/service/common'
+import { fetchCurrentWorkspace, fetchLanggeniusVersion, fetchUserProfile, getSystemFeatures } from '@/service/common'
 import type { App } from '@/types/app'
 import { Theme } from '@/types/app'
 import type { ICurrentWorkspace, LangGeniusVersionResponse, UserProfileResponse } from '@/models/common'
 import MaintenanceNotice from '@/app/components/header/maintenance-notice'
+import type { SystemFeatures } from '@/types/feature'
+import { defaultSystemFeatures } from '@/types/feature'
 
 export type AppContextValue = {
   theme: Theme
   setTheme: (theme: Theme) => void
   apps: App[]
+  systemFeatures: SystemFeatures
   mutateApps: VoidFunction
   userProfile: UserProfileResponse
   mutateUserProfile: VoidFunction
@@ -53,6 +56,7 @@ const initialWorkspaceInfo: ICurrentWorkspace = {
 
 const AppContext = createContext<AppContextValue>({
   theme: Theme.light,
+  systemFeatures: defaultSystemFeatures,
   setTheme: () => { },
   apps: [],
   mutateApps: () => { },
@@ -90,6 +94,10 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
   const { data: userProfileResponse, mutate: mutateUserProfile } = useSWR({ url: '/account/profile', params: {} }, fetchUserProfile)
   const { data: currentWorkspaceResponse, mutate: mutateCurrentWorkspace } = useSWR({ url: '/workspaces/current', params: {} }, fetchCurrentWorkspace)
 
+  const { data: systemFeatures } = useSWR({ url: '/console/system-features' }, getSystemFeatures, {
+    fallbackData: defaultSystemFeatures,
+  })
+
   const [userProfile, setUserProfile] = useState<UserProfileResponse>()
   const [langeniusVersionInfo, setLangeniusVersionInfo] = useState<LangGeniusVersionResponse>(initialLangeniusVersionInfo)
   const [currentWorkspace, setCurrentWorkspace] = useState<ICurrentWorkspace>(initialWorkspaceInfo)
@@ -105,6 +113,7 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       const current_env = process.env.NODE_ENV === 'development' ? 'DEVELOPMENT' : userProfileResponse.headers.get('x-env')
       const versionData = await fetchLanggeniusVersion({ url: '/version', params: { current_version } })
       setLangeniusVersionInfo({ ...versionData, current_version, latest_version: versionData.version, current_env })
+      console.log('versionData:', versionData)
     }
   }, [userProfileResponse])
 
@@ -136,6 +145,7 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       theme,
       setTheme: handleSetTheme,
       apps: appList.data,
+      systemFeatures,
       mutateApps,
       userProfile,
       mutateUserProfile,

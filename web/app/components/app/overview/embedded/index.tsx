@@ -74,6 +74,7 @@ const Embedded = ({ siteInfo, isShow, onClose, appBaseUrl, accessToken, classNam
   const [isCopied, setIsCopied] = useState<OptionStatus>({ iframe: false, scripts: false, chromePlugin: false })
 
   const { langeniusVersionInfo } = useAppContext()
+  console.log('langeniusVersionInfo:', langeniusVersionInfo)
   const themeBuilder = useThemeContext()
   themeBuilder.buildTheme(siteInfo?.chat_color_theme ?? null, siteInfo?.chat_color_theme_inverted ?? false)
   const isTestEnv = langeniusVersionInfo.current_env === 'TESTING' || langeniusVersionInfo.current_env === 'DEVELOPMENT'
@@ -153,8 +154,7 @@ const Embedded = ({ siteInfo, isShow, onClose, appBaseUrl, accessToken, classNam
           </div>
           <div className="flex items-center justify-center gap-1 p-2 rounded-lg">
             <Tooltip
-              selector={'code-copy-feedback'}
-              content={(isCopied[option] ? t(`${prefixEmbedded}.copied`) : t(`${prefixEmbedded}.copy`)) || ''}
+              popupContent={(isCopied[option] ? t(`${prefixEmbedded}.copied`) : t(`${prefixEmbedded}.copy`)) || ''}
             >
               <div className="w-8 h-8 rounded-lg cursor-pointer hover:bg-gray-100">
                 <div onClick={onClickCopy} className={`w-full h-full ${copyStyle.copyIcon} ${isCopied[option] ? copyStyle.copied : ''}`}></div>
